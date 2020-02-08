@@ -25,7 +25,7 @@ describe('fetch call builder', () => {
         .withPath('/')
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory', async () => {
@@ -38,7 +38,7 @@ describe('fetch call builder', () => {
         .withPath(() => '/root')
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory with array', async () => {
@@ -51,7 +51,7 @@ describe('fetch call builder', () => {
         .withPath(() => ['root', 1, false, 42])
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory with args', async () => {
@@ -80,7 +80,7 @@ describe('fetch call builder', () => {
         .withPath('/')
         .build();
 
-      await call({ rootUrl }, 'test');
+      await call({ rootUrl });
     });
 
     it('can build POST requests', async () => {
@@ -93,7 +93,7 @@ describe('fetch call builder', () => {
         .withPath('/')
         .build();
 
-      await call({ rootUrl }, 'test');
+      await call({ rootUrl });
     });
 
     it('can build PUT requests', async () => {
@@ -106,7 +106,7 @@ describe('fetch call builder', () => {
         .withPath('/')
         .build();
 
-      await call({ rootUrl }, 'test');
+      await call({ rootUrl });
     });
 
     it('can build HEAD requests', async () => {
@@ -119,7 +119,7 @@ describe('fetch call builder', () => {
         .withPath('/')
         .build();
 
-      await call({ rootUrl }, 'test');
+      await call({ rootUrl });
     });
 
     it('can build DELETE requests', async () => {
@@ -132,7 +132,7 @@ describe('fetch call builder', () => {
         .withPath('/')
         .build();
 
-      await call({ rootUrl }, 'test');
+      await call({ rootUrl });
     });
   });
 
@@ -148,7 +148,7 @@ describe('fetch call builder', () => {
         .withHeaders({ foo: 'bar' })
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory', async () => {
@@ -162,7 +162,7 @@ describe('fetch call builder', () => {
         .withHeaders(() => ({ foo: 'bar' }))
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory with args', async () => {
@@ -191,7 +191,7 @@ describe('fetch call builder', () => {
         .withHeaders({ foo: 'bar', 'Cache-Control': 'no-cache' })
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('coexists with UA', async () => {
@@ -207,7 +207,7 @@ describe('fetch call builder', () => {
         .withHeaders({ foo: 'bar' })
         .build();
 
-      await call({ rootUrl, userAgent: 'test-client' }, undefined);
+      await call({ rootUrl, userAgent: 'test-client' });
     });
   });
 
@@ -224,7 +224,7 @@ describe('fetch call builder', () => {
         .withQuery({ foo: 'bar' })
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory', async () => {
@@ -239,7 +239,7 @@ describe('fetch call builder', () => {
         .withQuery(() => ({ foo: 'bar' }))
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory with args', async () => {
@@ -272,7 +272,7 @@ describe('fetch call builder', () => {
         .withQuery(query)
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('as URLSearchParams', async () => {
@@ -289,7 +289,7 @@ describe('fetch call builder', () => {
         .withQuery(new URLSearchParams(query))
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('escaping', async () => {
@@ -306,7 +306,7 @@ describe('fetch call builder', () => {
         .withQuery(query)
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
   });
 
@@ -324,7 +324,7 @@ describe('fetch call builder', () => {
         .withJsonBody(testBody)
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory', async () => {
@@ -338,7 +338,7 @@ describe('fetch call builder', () => {
         .withJsonBody(() => testBody)
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it('can take factory with args', async () => {
@@ -379,7 +379,7 @@ describe('fetch call builder', () => {
         .withFormBody(body)
         .build();
 
-      await call({ rootUrl }, undefined);
+      await call({ rootUrl });
     });
 
     it.todo('can take urlsearchparams');

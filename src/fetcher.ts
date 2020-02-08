@@ -68,10 +68,14 @@ function buildBody<A, R>(record: CallRecord<A, R>, args: A) {
 
 // fixme: Two signatures. With one and two args
 
+type ApiCall<A, R> = A extends undefined
+  ? (config: Config) => Promise<R>
+  : (config: Config, args: A) => Promise<R>;
+
 export function makeFetchFunction<A, R>(
   record: CallRecord<A, R>
-): (config: Config, args: A) => Promise<R> {
-  return async (config: Config, args: A) => {
+): ApiCall<A, R> {
+  const ret: any = async (config: Config, args: A) => {
     const url = buildUrl(record, args);
     const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);
@@ -82,4 +86,5 @@ export function makeFetchFunction<A, R>(
 
     return record.outputRuntype.check(json);
   };
+  return ret as any;
 }
