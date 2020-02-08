@@ -1,1 +1,1 @@
-export { Builder } from './builder';
+export { createApiCall } from './builder';
