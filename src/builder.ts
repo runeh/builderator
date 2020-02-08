@@ -1,37 +1,18 @@
 import * as rt from 'runtypes';
 
-type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'DELETE';
-
-type PathPart = string | number | boolean;
-type PathBuilder<A> = (args: A) => string | readonly PathPart[];
-
-type Query = URLSearchParams | Record<string, string | number | boolean>;
-type QueryBuilder<Args> = (args: Args) => Query;
-
-type Headers = Record<string, string>;
-type HeadersBuilder<A> = (args: A) => Headers;
-
-type FormBody =
-  | URLSearchParams
-  | FormData
-  | Record<string, string | number | boolean>;
-type FormBodyBuilder<A> = (args: A) => FormBody;
-
-type JsonBody = Record<string, unknown>;
-type JsonBodyBuilder<A> = (args: A) => JsonBody;
-
-interface CallRecord<A, R> {
-  argRuntype?: rt.Runtype;
-  headersBuilder?: HeadersBuilder<A>;
-  httpMethod?: Method;
-  outputRuntype: rt.Runtype<R>;
-  pathBuilder?: PathBuilder<A>;
-  queryBuilder?: QueryBuilder<A>;
-  mapper?: (response: R, args: A) => any;
-  bodyBuilder?:
-    | { kind: 'form'; builder: FormBodyBuilder<A> }
-    | { kind: 'json'; builder: JsonBodyBuilder<A> };
-}
+import {
+  FormBody,
+  FormBodyBuilder,
+  Headers,
+  HeadersBuilder,
+  CallRecord,
+  JsonBodyBuilder,
+  JsonBody,
+  Method,
+  PathBuilder,
+  Query,
+  QueryBuilder,
+} from './types';
 
 type Constrained<A, R, M extends string, CurrentMethod extends string> = Omit<
   Builder<A, R, CurrentMethod | M>,
