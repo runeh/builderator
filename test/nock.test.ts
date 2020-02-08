@@ -407,19 +407,27 @@ describe('fetch call builder', () => {
       expect(ret.age).toEqual(body.age);
     });
 
-    // it('throws when not matching type', async () => {
-    //   nock(rootUrl)
-    //     .get('/')
-    //     .reply(200, {body});
+    it('throw on not matching type', async () => {
+      const body = { name: 'Rune', age: 40 };
 
-    //   const call = createApiCall()
-    //     .method('GET')
-    //     .path('/')
-    //     .build();
+      nock(rootUrl)
+        .get('/')
+        .reply(200, body);
 
-    //   const ret = await call({ rootUrl });
+      const call = createApiCall()
+        .method('GET')
+        .path('/')
+        .runtype(rt.Record({ name: rt.String, oldness: rt.Number }))
+        .build();
 
-    //   expect(ret).toEqual(body);
-    // });
+      const err = expect(call({ rootUrl })).rejects;
+
+      err.toThrowError(rt.ValidationError);
+      err.toHaveProperty('message', 'Expected number, but was undefined');
+    });
+  });
+
+  describe('error handling', () => {
+    it('throws on not OK status', () => {});
   });
 });
