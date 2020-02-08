@@ -13,6 +13,7 @@ import {
   Query,
   QueryBuilder,
 } from './types';
+import { makeFetchFunction } from 'fetcher';
 
 type Constrained<A, R, M extends string, CurrentMethod extends string> = Omit<
   Builder<A, R, CurrentMethod | M>,
@@ -105,7 +106,7 @@ export class Builder<A, R, M extends string = ''> {
   }
 
   build() {
-    return {} as (args: A) => Promise<R>;
+    return makeFetchFunction<A, R>(this.record);
   }
 }
 
@@ -116,5 +117,3 @@ export class Builder<A, R, M extends string = ''> {
 //   .withRuntype(rt.Number)
 //   .withMapper(e => ({ age: e }))
 //   .build();
-// // .wi
-// // wi

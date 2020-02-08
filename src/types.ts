@@ -5,7 +5,7 @@ export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'DELETE';
 export type PathPart = string | number | boolean;
 export type PathBuilder<A> = (args: A) => string | readonly PathPart[];
 
-export type Query = URLSearchParams | Record<string, string | number | boolean>;
+export type Query = URLSearchParams | Record<string, string>;
 export type QueryBuilder<Args> = (args: Args) => Query;
 
 export type Headers = Record<string, string>;
@@ -31,4 +31,11 @@ export interface CallRecord<A, R> {
   bodyBuilder?:
     | { kind: 'form'; builder: FormBodyBuilder<A> }
     | { kind: 'json'; builder: JsonBodyBuilder<A> };
+}
+
+export interface Config {
+  rootUrl: string;
+  userAgent?: string;
+  onBefore?: () => void;
+  onAfter?: () => void;
 }

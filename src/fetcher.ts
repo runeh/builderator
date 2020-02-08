@@ -1,170 +1,73 @@
-function buildCall<Args, ApiReturn>(record: CallRecord<Args, ApiReturn>) {
-  const {
-    mapper,
-    method,
-    pathBuilder,
-    queryBuilder,
-    inputRuntype,
-    outputRuntype,
-    jsonBodyBuilder,
-    formBodyBuilder,
-    tokenKind,
-  } = record;
-  const apiCallFun = async (opts: CommonOpts, args: Args) => {
-    const url = buildUrl(
-      opts.apiRoot,
-      pathBuilder(args),
-      queryBuilder ? queryBuilder(args) : undefined
-    );
-    inputRuntype.check(args);
+import { URL, URLSearchParams } from 'url';
+import { CallRecord, PathPart, Query, Config } from './types';
+import fetch from 'node-fetch';
 
-    const startTime = Date.now();
-    if (opts.onBefore) {
-      opts.onBefore({ method, args, body: '', url, startTime });
-    }
-
-    let result;
-    let response;
-
-    try {
-      let fetchOpts: FetchOpts = {
-        url,
-        token: opts.token,
-        method,
-        kind: 'empty',
-        tokenKind,
-      };
-
-      if (formBodyBuilder) {
-        fetchOpts = {
-          ...fetchOpts,
-          kind: 'form',
-          body: formBodyBuilder(args),
-        } as FormBodyFetchOpts;
-      } else if (jsonBodyBuilder) {
-        fetchOpts = {
-          ...fetchOpts,
-          kind: 'json',
-          body: jsonBodyBuilder(args),
-        };
-      }
-
-      const ret = await doFetch(fetchOpts);
-      response = ret.res;
-      result = outputRuntype.check(ret.value);
-      const mapped = mapper(result, args);
-      if (opts.onAfter) {
-        opts.onAfter({ startTime, response, result });
-      }
-      return mapped;
-    } catch (error) {
-      if (opts.onAfter) {
-        opts.onAfter({ startTime, response, result });
-      }
-
-      if (error instanceof rt.ValidationError) {
-        throw error;
-      } else {
-        throw error;
-      }
-    }
-  };
-
-  return apiCallFun as ApiCall<ApiReturn, Args>;
+function pathToString(path: string | readonly PathPart[]): string {
+  return typeof path === 'string' ? path : path.join('/');
 }
 
-function parseJson(str: string) {
-  try {
-    return JSON.parse(str);
-  } catch (error) {
-    return undefined;
+function queryToSearchParams(query: Query | undefined): URLSearchParams {
+  if (query === undefined) {
+    return new URLSearchParams();
+  } else if (query instanceof URLSearchParams) {
+    return query;
+  } else {
+    return new URLSearchParams(query as any); // fixme
   }
 }
 
-async function unpackJson(res: Response) {
-  try {
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    return undefined;
-  }
-}
+// fixme: Also options
+function buildUrl<A, R>(record: CallRecord<A, R>, args: A): URL {
+  const pathFun = record.pathBuilder ?? (() => '/');
+  const path: string = pathToString(pathFun(args));
 
-interface BaseFetchOpts {
-  method: Method;
-  token: string;
-  url: URL;
-  tokenKind: TokenKind;
-  query?: Query;
-  userAgent?: string;
-}
+  const queryFun = record.queryBuilder ?? (() => undefined);
+  const query = queryToSearchParams(queryFun(args));
 
-interface EmptyBodyFetchOpts extends BaseFetchOpts {
-  kind: 'empty';
-}
-
-interface JsonBodyFetchOpts extends BaseFetchOpts {
-  kind: 'json';
-  body: JsonBody;
-}
-
-interface FormBodyFetchOpts extends BaseFetchOpts {
-  kind: 'form';
-  body: FormBody;
-}
-
-type FetchOpts = EmptyBodyFetchOpts | JsonBodyFetchOpts | FormBodyFetchOpts;
-
-function getBody(opts: FetchOpts): BodyInit | undefined {
-  switch (opts.kind) {
-    case 'empty':
-      return undefined;
-    case 'json':
-      return JSON.stringify(opts.body);
-    case 'form':
-      return opts.body instanceof URLSearchParams
-        ? opts.body
-        : new URLSearchParams(opts.body);
-  }
-}
-
-async function doFetch(
-  opts: FetchOpts
-): Promise<{ res: Response; value?: any }> {
-  const { tokenKind, token, method, url } = opts;
-  const headers: Record<string, string> = {};
-
-  if (tokenKind !== 'None') {
-    headers.Authorization = `${tokenKind} ${token}`;
+  const url = new URL('http://example.org');
+  url.pathname = path;
+  for (const [key, value] of query) {
+    url.searchParams.set(key, value);
   }
 
-  if (opts.userAgent) {
-    headers['User-Agent'] = opts.userAgent;
+  return url;
+}
+
+function buildHeaders<A, R>(
+  record: CallRecord<A, R>,
+  args: A,
+  config: Config
+): Record<string, string> {
+  const headers: Record<string, string> = record.headersBuilder
+    ? record.headersBuilder(args)
+    : {};
+
+  if (config.userAgent) {
+    headers['User-Agent'] = config.userAgent;
   }
 
-  if (opts.kind === 'json') {
+  if (record.bodyBuilder?.kind === 'json') {
     headers['Content-Type'] = 'application/json';
   }
 
-  const body = getBody(opts);
-  const res = await fetch(url.toString(), { method, headers, body });
+  return headers;
+}
 
-  if (!res.ok) {
-    const text = await res.text();
-    const data = parseJson(text);
-    const maybeError = ErrorResponseRt.validate(data);
-    const msg = maybeError.success
-      ? maybeError.value.Message
-      : text || 'Unknown API error';
+export function makeFetchFunction<A, R>(
+  record: CallRecord<A, R>
+): (config: Config, args: A) => Promise<R> {
+  return async (config: Config, args: A) => {
+    const url = buildUrl(record, args);
 
-    throw new ApiError(
-      msg,
-      res,
-      maybeError.success ? maybeError.value : undefined
-    );
-  } else if (res.status === 200) {
-    return { res, value: await unpackJson(res) };
-  } else {
-    return { res, value: undefined };
-  }
+    const headers = buildHeaders(record, args, config);
+
+    const res = await fetch(url, {
+      method: record.httpMethod ?? 'GET',
+      headers,
+    });
+
+    const json = await res.json();
+
+    return record.outputRuntype.check(json);
+  };
 }
