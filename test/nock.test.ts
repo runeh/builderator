@@ -1,5 +1,6 @@
 import nock from 'nock';
 import { createApiCall } from '../src';
+import * as rt from 'runtypes';
 
 const rootUrl = 'http://example.org';
 
@@ -385,5 +386,40 @@ describe('fetch call builder', () => {
     it.todo('can take urlsearchparams');
     it.todo('can take builder');
     it.todo('can take args');
+  });
+
+  describe('response runtype', () => {
+    it('validates type', async () => {
+      const body = { name: 'Rune', age: 40 };
+
+      nock(rootUrl)
+        .get('/')
+        .reply(200, body);
+
+      const call = createApiCall()
+        .method('GET')
+        .path('/')
+        .runtype(rt.Record({ name: rt.String, age: rt.Number }))
+        .build();
+
+      const ret = await call({ rootUrl });
+      expect(ret.name).toEqual(body.name);
+      expect(ret.age).toEqual(body.age);
+    });
+
+    // it('throws when not matching type', async () => {
+    //   nock(rootUrl)
+    //     .get('/')
+    //     .reply(200, {body});
+
+    //   const call = createApiCall()
+    //     .method('GET')
+    //     .path('/')
+    //     .build();
+
+    //   const ret = await call({ rootUrl });
+
+    //   expect(ret).toEqual(body);
+    // });
   });
 });
