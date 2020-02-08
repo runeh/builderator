@@ -5,8 +5,6 @@
 - 204 and other bodyless responses
 - Partial record with type guard
 - Throw when incomplete object
-- Allow 1 or 2 args to builder
-- skip "with" in methods?
 - Support all types from BodiInit
 - typing stuff for body type. Disallow when not post
 - join the withType to support runtype or generic?
@@ -17,6 +15,11 @@
 
 - ua and content type works together with user supplied headers
 - smoke / everything
+
+## misc
+
+- Type that matches union of features ?
+  - Can do with lots of feat1_feat2_feat3_feat4 things?
 
 createCall()
 .withRuntypeArguments

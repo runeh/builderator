@@ -21,8 +21,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
+        .method('GET')
+        .path('/')
         .build();
 
       await call({ rootUrl });
@@ -34,8 +34,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath(() => '/root')
+        .method('GET')
+        .path(() => '/root')
         .build();
 
       await call({ rootUrl });
@@ -47,8 +47,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath(() => ['root', 1, false, 42])
+        .method('GET')
+        .path(() => ['root', 1, false, 42])
         .build();
 
       await call({ rootUrl });
@@ -56,16 +56,16 @@ describe('fetch call builder', () => {
 
     it('can take factory with args', async () => {
       nock(rootUrl)
-        .get('/root/test')
+        .get('/root/bar')
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withArgs<string>()
-        .withPath(e => ['root', e])
+        .method('GET')
+        .args<{ val: string }>()
+        .path(e => ['root', e.val])
         .build();
 
-      await call({ rootUrl }, 'test');
+      await call({ rootUrl }, { val: 'bar' });
     });
   });
 
@@ -76,8 +76,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
+        .method('GET')
+        .path('/')
         .build();
 
       await call({ rootUrl });
@@ -89,8 +89,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('POST')
-        .withPath('/')
+        .method('POST')
+        .path('/')
         .build();
 
       await call({ rootUrl });
@@ -102,8 +102,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('PUT')
-        .withPath('/')
+        .method('PUT')
+        .path('/')
         .build();
 
       await call({ rootUrl });
@@ -115,8 +115,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('HEAD')
-        .withPath('/')
+        .method('HEAD')
+        .path('/')
         .build();
 
       await call({ rootUrl });
@@ -128,8 +128,8 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('DELETE')
-        .withPath('/')
+        .method('DELETE')
+        .path('/')
         .build();
 
       await call({ rootUrl });
@@ -143,9 +143,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withHeaders({ foo: 'bar' })
+        .method('GET')
+        .path('/')
+        .headers({ foo: 'bar' })
         .build();
 
       await call({ rootUrl });
@@ -157,9 +157,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withHeaders(() => ({ foo: 'bar' }))
+        .method('GET')
+        .path('/')
+        .headers(() => ({ foo: 'bar' }))
         .build();
 
       await call({ rootUrl });
@@ -171,13 +171,13 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withArgs<string>()
-        .withHeaders(e => ({ foo: e }))
+        .method('GET')
+        .path('/')
+        .args<{ val: string }>()
+        .headers(e => ({ foo: e.val }))
         .build();
 
-      await call({ rootUrl }, 'bar');
+      await call({ rootUrl }, { val: 'bar' });
     });
 
     it('multiple headers', async () => {
@@ -186,9 +186,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withHeaders({ foo: 'bar', 'Cache-Control': 'no-cache' })
+        .method('GET')
+        .path('/')
+        .headers({ foo: 'bar', 'Cache-Control': 'no-cache' })
         .build();
 
       await call({ rootUrl });
@@ -202,9 +202,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withHeaders({ foo: 'bar' })
+        .method('GET')
+        .path('/')
+        .headers({ foo: 'bar' })
         .build();
 
       await call({ rootUrl, userAgent: 'test-client' });
@@ -219,9 +219,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withQuery({ foo: 'bar' })
+        .method('GET')
+        .path('/')
+        .query({ foo: 'bar' })
         .build();
 
       await call({ rootUrl });
@@ -234,9 +234,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withQuery(() => ({ foo: 'bar' }))
+        .method('GET')
+        .path('/')
+        .query(() => ({ foo: 'bar' }))
         .build();
 
       await call({ rootUrl });
@@ -249,13 +249,13 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withArgs<string>()
-        .withQuery(e => ({ foo: e }))
+        .method('GET')
+        .path('/')
+        .args<{ val: string }>()
+        .query(e => ({ foo: e.val }))
         .build();
 
-      await call({ rootUrl }, 'bar');
+      await call({ rootUrl }, { val: 'bar' });
     });
 
     it('multiple queries variables', async () => {
@@ -267,9 +267,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withQuery(query)
+        .method('GET')
+        .path('/')
+        .query(query)
         .build();
 
       await call({ rootUrl });
@@ -284,9 +284,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withQuery(new URLSearchParams(query))
+        .method('GET')
+        .path('/')
+        .query(new URLSearchParams(query))
         .build();
 
       await call({ rootUrl });
@@ -301,9 +301,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('GET')
-        .withPath('/')
-        .withQuery(query)
+        .method('GET')
+        .path('/')
+        .query(query)
         .build();
 
       await call({ rootUrl });
@@ -319,9 +319,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('POST')
-        .withPath('/')
-        .withJsonBody(testBody)
+        .method('POST')
+        .path('/')
+        .jsonBody(testBody)
         .build();
 
       await call({ rootUrl });
@@ -333,29 +333,29 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('POST')
-        .withPath('/')
-        .withJsonBody(() => testBody)
+        .method('POST')
+        .path('/')
+        .jsonBody(() => testBody)
         .build();
 
       await call({ rootUrl });
     });
 
     it('can take factory with args', async () => {
-      const body = { ...testBody, test: 'foo' };
+      const body = { ...testBody, test: 'bar' };
 
       nock(rootUrl, { reqheaders: { 'content-type': 'application/json' } })
         .post('/', body)
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('POST')
-        .withPath('/')
-        .withArgs<string>()
-        .withJsonBody(e => ({ ...testBody, test: e }))
+        .method('POST')
+        .path('/')
+        .args<{ val: string }>()
+        .jsonBody(e => ({ ...testBody, test: e.val }))
         .build();
 
-      await call({ rootUrl }, 'foo');
+      await call({ rootUrl }, { val: 'bar' });
     });
 
     it.todo('can take FormBody');
@@ -374,9 +374,9 @@ describe('fetch call builder', () => {
         .reply(200, {});
 
       const call = createApiCall()
-        .withMethod('POST')
-        .withPath('/')
-        .withFormBody(body)
+        .method('POST')
+        .path('/')
+        .formBody(body)
         .build();
 
       await call({ rootUrl });
