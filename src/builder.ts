@@ -20,7 +20,7 @@ type Constrained<A, R, M extends string, CurrentMethod extends string> = Omit<
   CurrentMethod | M
 >;
 
-export class Builder<A, R, M extends string = ''> {
+class Builder<A, R, M extends string = ''> {
   private record: CallRecord<A, any>;
 
   constructor() {
@@ -110,10 +110,6 @@ export class Builder<A, R, M extends string = ''> {
   }
 }
 
-// const lal = new Builder()
-//   .withMethod('GET')
-//   .withFormBody({ foo: 123 })
-//   .withArgs<{ name: string }>()
-//   .withRuntype(rt.Number)
-//   .withMapper(e => ({ age: e }))
-//   .build();
+export function createApiCall() {
+  return new Builder();
+}
