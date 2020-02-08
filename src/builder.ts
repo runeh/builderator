@@ -13,7 +13,7 @@ import {
   Query,
   QueryBuilder,
 } from './types';
-import { makeFetchFunction } from 'fetcher';
+import { makeFetchFunction } from './fetcher';
 
 type Constrained<A, R, M extends string, CurrentMethod extends string> = Omit<
   Builder<A, R, CurrentMethod | M>,

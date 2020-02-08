@@ -53,6 +53,8 @@ function buildHeaders<A, R>(
   return headers;
 }
 
+// fixme: Two signatures. With one and two args
+
 export function makeFetchFunction<A, R>(
   record: CallRecord<A, R>
 ): (config: Config, args: A) => Promise<R> {
@@ -65,7 +67,6 @@ export function makeFetchFunction<A, R>(
       method: record.httpMethod ?? 'GET',
       headers,
     });
-
     const json = await res.json();
 
     return record.outputRuntype.check(json);
