@@ -53,6 +53,18 @@ function buildHeaders<A, R>(
   return headers;
 }
 
+function buildBody<A, R>(record: CallRecord<A, R>, args: A, _config: Config) {
+  if (record.bodyBuilder?.kind === 'form') {
+    return undefined;
+  } else if (record.bodyBuilder?.kind === 'json') {
+    const builder = record.bodyBuilder.builder;
+    const data = builder(args);
+    return JSON.stringify(data);
+  } else {
+    return undefined;
+  }
+}
+
 // fixme: Two signatures. With one and two args
 
 export function makeFetchFunction<A, R>(
@@ -60,13 +72,11 @@ export function makeFetchFunction<A, R>(
 ): (config: Config, args: A) => Promise<R> {
   return async (config: Config, args: A) => {
     const url = buildUrl(record, args);
-
+    const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);
+    const body = buildBody(record, args, config);
 
-    const res = await fetch(url, {
-      method: record.httpMethod ?? 'GET',
-      headers,
-    });
+    const res = await fetch(url, { method, headers, body });
     const json = await res.json();
 
     return record.outputRuntype.check(json);
