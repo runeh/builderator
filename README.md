@@ -1,13 +1,13 @@
 # TSDX Bootstrap
 
 createCall()
-x .withRuntypeArguments
-x .withArguments<{foo: string}>()
-x .withHeaders(e => {})
-x .withRuntype(rt)
-x .withQuery
-x .withPath()
-x .withMethod
-x .withMapper
+.withRuntypeArguments
+.withArguments<{foo: string}>()
+.withHeaders(e => {})
+.withRuntype(rt)
+.withQuery
+.withPath()
+.withMethod
+.withMapper
 .withFormBody()
 .withJsonBody()
