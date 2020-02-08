@@ -9,6 +9,9 @@
 - skip "with" in methods?
 - Support all types from BodiInit
 - typing stuff for body type. Disallow when not post
+- join the withType to support runtype or generic?
+- exceptions
+- before/after handlers
 
 ## tests
 

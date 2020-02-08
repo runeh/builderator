@@ -53,13 +53,14 @@ function buildHeaders<A, R>(
   return headers;
 }
 
-function buildBody<A, R>(record: CallRecord<A, R>, args: A, _config: Config) {
+function buildBody<A, R>(record: CallRecord<A, R>, args: A) {
   if (record.bodyBuilder?.kind === 'form') {
-    return undefined;
+    const body = record.bodyBuilder.builder(args);
+    return body instanceof URLSearchParams
+      ? body
+      : new URLSearchParams(body as Record<string, string>);
   } else if (record.bodyBuilder?.kind === 'json') {
-    const builder = record.bodyBuilder.builder;
-    const data = builder(args);
-    return JSON.stringify(data);
+    return JSON.stringify(record.bodyBuilder.builder(args));
   } else {
     return undefined;
   }
@@ -74,7 +75,7 @@ export function makeFetchFunction<A, R>(
     const url = buildUrl(record, args);
     const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);
-    const body = buildBody(record, args, config);
+    const body = buildBody(record, args);
 
     const res = await fetch(url, { method, headers, body });
     const json = await res.json();

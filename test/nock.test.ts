@@ -362,5 +362,28 @@ describe('fetch call builder', () => {
     it.todo('can take stream');
   });
 
-  it.todo('post form body');
+  describe('form body building', () => {
+    const body = { foo: 'bar' };
+    it('can take value', async () => {
+      nock(rootUrl, {
+        reqheaders: {
+          'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      })
+        .post('/', 'foo=bar')
+        .reply(200, {});
+
+      const call = createApiCall()
+        .withMethod('POST')
+        .withPath('/')
+        .withFormBody(body)
+        .build();
+
+      await call({ rootUrl }, undefined);
+    });
+
+    it.todo('can take urlsearchparams');
+    it.todo('can take builder');
+    it.todo('can take args');
+  });
 });

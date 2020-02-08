@@ -11,10 +11,8 @@ export type QueryBuilder<Args> = (args: Args) => Query;
 export type Headers = Record<string, string>;
 export type HeadersBuilder<A> = (args: A) => Headers;
 
-export type FormBody =
-  | URLSearchParams
-  | FormData
-  | Record<string, string | number | boolean>;
+// fixme: allow more types here?
+export type FormBody = URLSearchParams | Record<string, string>;
 export type FormBodyBuilder<A> = (args: A) => FormBody;
 
 export type JsonBody = Record<string, unknown>;
