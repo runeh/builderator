@@ -1,5 +1,4 @@
 import * as rt from 'runtypes';
-
 import {
   FormBody,
   FormBodyBuilder,
@@ -27,18 +26,18 @@ class Builder<A = undefined, R = void, M extends string = ''> {
     this.record = { outputRuntype: rt.Void };
   }
 
-  args<T>() {
-    return this as Constrained<T, R, M, 'args' | 'argRuntype'>;
+  args<T>(runtype: rt.Runtype<T>): Constrained<T, R, M, 'args'>;
+  args<T>(): Constrained<T, R, M, 'args'>;
+  args(t?: rt.Runtype) {
+    if (t !== undefined) {
+      this.record.argRuntype = t;
+    }
+    return this as any;
   }
 
   runtype<T>(rt: rt.Runtype<T>) {
     this.record.outputRuntype = rt;
     return (this as unknown) as Constrained<A, T, M, 'runtype'>;
-  }
-
-  argsRuntype<T>(rt: rt.Runtype<T>) {
-    this.record.argRuntype = rt;
-    return this as Constrained<T, R, M, 'args' | 'argsRuntype'>;
   }
 
   query(query: Query): Constrained<A, R, M, 'query'>;

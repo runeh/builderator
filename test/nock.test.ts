@@ -472,7 +472,7 @@ describe('fetch call builder', () => {
   });
 
   describe('Empty responses', () => {
-    it('returns void when no rt and no content', async () => {
+    it('should return undefined when no rt and no response body', async () => {
       nock(rootUrl)
         .get('/')
         .reply(204);
@@ -486,7 +486,7 @@ describe('fetch call builder', () => {
       await expect(response).resolves.toEqual(undefined);
     });
 
-    it('throws void when rt but no content', async () => {
+    it('should throw when runtyp but no response body', async () => {
       nock(rootUrl)
         .get('/')
         .reply(204);
@@ -502,6 +502,22 @@ describe('fetch call builder', () => {
       await expect(response).rejects.toMatchObject({
         message: 'Got HTTP status 204 but call requires response body',
       });
+    });
+  });
+
+  describe('runtype arguments', () => {
+    it('should accept runtype as argument type', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(204);
+
+      const call = createApiCall()
+        .path('/')
+        .method('GET')
+        .args(rt.Record({ name: rt.String, age: rt.Number }))
+        .build();
+
+      await call({ rootUrl }, { age: 12, name: 'blargh' });
     });
   });
 });

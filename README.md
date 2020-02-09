@@ -14,6 +14,8 @@
 - error mapper?
 - Prevent combining head with response stuff
 - More error classes or `kind` on API error?
+- Custom error when input runtype fails
+- ditto mapper?
 
 ## tests
 
