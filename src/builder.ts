@@ -20,11 +20,11 @@ type Constrained<A, R, M extends string, CurrentMethod extends string> = Omit<
   CurrentMethod | M
 >;
 
-class Builder<A = undefined, R = unknown, M extends string = ''> {
+class Builder<A = undefined, R = void, M extends string = ''> {
   private record: CallRecord<A, any>;
 
   constructor() {
-    this.record = { outputRuntype: rt.Unknown };
+    this.record = { outputRuntype: rt.Void };
   }
 
   args<T>() {
