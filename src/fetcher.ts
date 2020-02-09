@@ -78,6 +78,10 @@ export function makeFetchFunction<A, R>(
   record: CallRecord<A, R>
 ): ApiCall<A, R> {
   const ret: any = async (config: Config, args: A) => {
+    if (record.argRuntype !== undefined) {
+      record.argRuntype.check(args);
+    }
+
     const url = buildUrl(record, args);
     const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);

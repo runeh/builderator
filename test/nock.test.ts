@@ -449,7 +449,7 @@ describe('fetch call builder', () => {
   });
 
   describe('error handling', () => {
-    it('throws on not OK status', async () => {
+    it('should throw on not OK status', async () => {
       nock(rootUrl)
         .get('/')
         .reply(404);
@@ -466,6 +466,46 @@ describe('fetch call builder', () => {
         status: 404,
         statusText: 'Not Found',
       });
+    });
+
+    it.skip('should throw when error in mapper', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(200, { name: 'foo' });
+
+      const call = createApiCall()
+        .method('GET')
+        .path('/')
+        .map(() => {
+          throw new Error('Morradi');
+        })
+        .build();
+
+      const response = call({ rootUrl });
+      // fixme: what should the error be?
+      await expect(response).rejects.toThrowError(ApiError);
+    });
+
+    it('should throw when runtype input cond fails', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(204);
+
+      const call = createApiCall()
+        .method('GET')
+        .path('/')
+        .args(
+          rt.String.withConstraint(
+            e => e.length === 4 || 'String must be 4 characters long'
+          )
+        )
+        .build();
+
+      const response = call({ rootUrl }, 'foo');
+
+      // fixme: should this be another error? Somehow show that it
+      // was the input that failed?
+      await expect(response).rejects.toThrowError(rt.ValidationError);
     });
 
     it.todo('Get data for body on errors');
@@ -486,7 +526,7 @@ describe('fetch call builder', () => {
       await expect(response).resolves.toEqual(undefined);
     });
 
-    it('should throw when runtyp but no response body', async () => {
+    it('should throw when runtype but no response body', async () => {
       nock(rootUrl)
         .get('/')
         .reply(204);

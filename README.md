@@ -16,6 +16,7 @@
 - More error classes or `kind` on API error?
 - Custom error when input runtype fails
 - ditto mapper?
+- Other fetch errors than 404. Like no network, no dns etc.
 
 ## tests
 
