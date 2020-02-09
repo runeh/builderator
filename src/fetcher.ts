@@ -87,7 +87,16 @@ export function makeFetchFunction<A, R>(
     const headers = buildHeaders(record, args, config);
     const body = buildRequestBody(record, args);
 
+    const startTimeMs = Date.now();
+    if (config.onBefore !== undefined) {
+      config.onBefore({ startTimeMs });
+    }
+
     const res = await fetch(url, { method, headers, body });
+
+    if (config.onAfter) {
+      config.onAfter({ startTimeMs });
+    }
 
     if (res.status === 204) {
       if (record.outputRuntype !== rt.Void) {

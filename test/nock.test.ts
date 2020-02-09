@@ -560,4 +560,25 @@ describe('fetch call builder', () => {
       await call({ rootUrl }, { age: 12, name: 'blargh' });
     });
   });
+
+  describe('before/after handlers', () => {
+    it('should invoke handlers', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(204);
+
+      const call = createApiCall()
+        .path('/')
+        .method('GET')
+        .build();
+
+      const onBefore = jest.fn();
+      const onAfter = jest.fn();
+
+      await call({ rootUrl, onBefore, onAfter });
+
+      expect(onBefore).toHaveBeenCalled();
+      expect(onAfter).toHaveBeenCalled();
+    });
+  });
 });

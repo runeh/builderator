@@ -34,6 +34,6 @@ export interface CallRecord<A, R> {
 export interface Config {
   rootUrl: string;
   userAgent?: string;
-  onBefore?: () => void;
-  onAfter?: () => void;
+  onBefore?: (info: { startTimeMs: number }) => void;
+  onAfter?: (info: { startTimeMs: number }) => void;
 }
