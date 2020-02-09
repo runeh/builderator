@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { createApiCall } from '../src';
+import { createApiCall, ApiError } from '../src';
 import * as rt from 'runtypes';
 
 const rootUrl = 'http://example.org';
@@ -422,12 +422,32 @@ describe('fetch call builder', () => {
 
       const err = expect(call({ rootUrl })).rejects;
 
-      err.toThrowError(rt.ValidationError);
-      err.toHaveProperty('message', 'Expected number, but was undefined');
+      expect(err.toThrowError(rt.ValidationError));
+      expect(
+        err.toHaveProperty('message', 'Expected number, but was undefined')
+      );
+      expect(err.toHaveProperty('name', 'ValidationError'));
     });
   });
 
   describe('error handling', () => {
-    it('throws on not OK status', () => {});
+    it.only('throws on not OK status', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(404);
+
+      const call = createApiCall()
+        .method('GET')
+        .path('/')
+        .build();
+
+      expect(call({ rootUrl })).rejects.toThrowError(ApiError);
+
+      const response = call({ rootUrl });
+
+      expect(response).rejects.toThrowError(ApiError);
+      expect(response).rejects.toThrowError(String);
+      expect(response).rejects.toThrowError(Boolean);
+    });
   });
 });

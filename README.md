@@ -10,6 +10,8 @@
 - join the withType to support runtype or generic?
 - exceptions
 - before/after handlers
+- Throw if no runtype for response?
+- error mapper?
 
 ## tests
 

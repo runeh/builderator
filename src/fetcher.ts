@@ -1,6 +1,7 @@
 import { URL, URLSearchParams } from 'url';
 import { CallRecord, PathPart, Query, Config } from './types';
 import fetch from 'node-fetch';
+import { ApiError } from './exceptions';
 
 function pathToString(path: string | readonly PathPart[]): string {
   return typeof path === 'string' ? path : path.join('/');
@@ -82,9 +83,13 @@ export function makeFetchFunction<A, R>(
     const body = buildBody(record, args);
 
     const res = await fetch(url, { method, headers, body });
-    const json = await res.json();
 
-    return record.outputRuntype.check(json);
+    if (res.ok) {
+      const json = await res.json();
+      return record.outputRuntype.check(json);
+    } else {
+      throw new ApiError(`Got HTTP status ${res.status}`, res);
+    }
   };
   return ret as any;
 }
