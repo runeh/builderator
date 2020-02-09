@@ -19,6 +19,7 @@
 - smoke / everything
 - error handling
 - before / after
+- something in mapper throws
 
 ## misc
 

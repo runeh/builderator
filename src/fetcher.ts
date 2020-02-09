@@ -54,7 +54,7 @@ function buildHeaders<A, R>(
   return headers;
 }
 
-function buildBody<A, R>(record: CallRecord<A, R>, args: A) {
+function buildRequestBody<A, R>(record: CallRecord<A, R>, args: A) {
   if (record.bodyBuilder?.kind === 'form') {
     const body = record.bodyBuilder.builder(args);
     return body instanceof URLSearchParams
@@ -80,13 +80,14 @@ export function makeFetchFunction<A, R>(
     const url = buildUrl(record, args);
     const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);
-    const body = buildBody(record, args);
+    const body = buildRequestBody(record, args);
 
     const res = await fetch(url, { method, headers, body });
 
     if (res.ok) {
       const json = await res.json();
-      return record.outputRuntype.check(json);
+      const ret = record.outputRuntype.check(json);
+      return record.mapper ? record.mapper(ret, args) : ret;
     } else {
       throw new ApiError(`Got HTTP status ${res.status}`, res);
     }

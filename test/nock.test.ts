@@ -388,6 +388,24 @@ describe('fetch call builder', () => {
     it.todo('can take args');
   });
 
+  describe('response map', () => {
+    it('can map', async () => {
+      nock(rootUrl)
+        .post('/')
+        .reply(200, { name: 'Rune', age: 40 });
+
+      const call = createApiCall()
+        .method('POST')
+        .path('/')
+        .runtype(rt.Record({ name: rt.String, age: rt.Number }))
+        .map(e => ({ info: `${e.name} (${e.age})` }))
+        .build();
+
+      const res = await call({ rootUrl });
+      expect(res.info).toEqual('Rune (40)');
+    });
+  });
+
   describe('response runtype', () => {
     it('validates type', async () => {
       const body = { name: 'Rune', age: 40 };
@@ -449,5 +467,9 @@ describe('fetch call builder', () => {
         statusText: 'Not Found',
       });
     });
+
+    it.todo('Get data for body on errors');
   });
+
+  it.todo('204 / bodyless things');
 });
