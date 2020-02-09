@@ -471,5 +471,37 @@ describe('fetch call builder', () => {
     it.todo('Get data for body on errors');
   });
 
-  it.todo('204 / bodyless things');
+  describe('Empty responses', () => {
+    it('returns void when no rt and no content', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(204);
+
+      const call = createApiCall()
+        .path('/')
+        .method('GET')
+        .build();
+
+      const response = call({ rootUrl });
+      await expect(response).resolves.toEqual(undefined);
+    });
+
+    it('throws void when rt but no content', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(204);
+
+      const call = createApiCall()
+        .path('/')
+        .method('GET')
+        .runtype(rt.String)
+        .build();
+
+      const response = call({ rootUrl });
+      await expect(response).rejects.toThrowError(ApiError);
+      await expect(response).rejects.toMatchObject({
+        message: 'Got HTTP status 204 but call requires response body',
+      });
+    });
+  });
 });

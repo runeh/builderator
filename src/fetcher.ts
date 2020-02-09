@@ -2,6 +2,7 @@ import { URL, URLSearchParams } from 'url';
 import { CallRecord, PathPart, Query, Config } from './types';
 import fetch from 'node-fetch';
 import { ApiError } from './exceptions';
+import * as rt from 'runtypes';
 
 function pathToString(path: string | readonly PathPart[]): string {
   return typeof path === 'string' ? path : path.join('/');
@@ -84,7 +85,16 @@ export function makeFetchFunction<A, R>(
 
     const res = await fetch(url, { method, headers, body });
 
-    if (res.ok) {
+    if (res.status === 204) {
+      if (record.outputRuntype !== rt.Void) {
+        throw new ApiError(
+          `Got HTTP status ${res.status} but call requires response body`,
+          res
+        );
+      } else {
+        return void 0;
+      }
+    } else if (res.ok) {
       const json = await res.json();
       const ret = record.outputRuntype.check(json);
       return record.mapper ? record.mapper(ret, args) : ret;

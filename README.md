@@ -12,6 +12,8 @@
 - before/after handlers
 - Throw if no runtype for response?
 - error mapper?
+- Prevent combining head with response stuff
+- More error classes or `kind` on API error?
 
 ## tests
 
