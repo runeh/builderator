@@ -431,7 +431,7 @@ describe('fetch call builder', () => {
   });
 
   describe('error handling', () => {
-    it.only('throws on not OK status', async () => {
+    it('throws on not OK status', async () => {
       nock(rootUrl)
         .get('/')
         .reply(404);
@@ -441,13 +441,11 @@ describe('fetch call builder', () => {
         .path('/')
         .build();
 
-      expect(call({ rootUrl })).rejects.toThrowError(ApiError);
-
       const response = call({ rootUrl });
 
-      expect(response).rejects.toThrowError(ApiError);
-      expect(response).rejects.toThrowError(String);
-      expect(response).rejects.toThrowError(Boolean);
+      await expect(response).rejects.toThrowError(ApiError);
+      await expect(response).rejects.toThrowError(String);
+      await expect(response).rejects.toThrowError(Boolean);
     });
   });
 });
