@@ -420,13 +420,13 @@ describe('fetch call builder', () => {
         .runtype(rt.Record({ name: rt.String, oldness: rt.Number }))
         .build();
 
-      const err = expect(call({ rootUrl })).rejects;
+      const response = call({ rootUrl });
 
-      expect(err.toThrowError(rt.ValidationError));
-      expect(
-        err.toHaveProperty('message', 'Expected number, but was undefined')
+      await expect(response).rejects.toThrowError(rt.ValidationError);
+      await expect(response).rejects.toHaveProperty(
+        'message',
+        'Expected number, but was undefined'
       );
-      expect(err.toHaveProperty('name', 'ValidationError'));
     });
   });
 
@@ -444,8 +444,10 @@ describe('fetch call builder', () => {
       const response = call({ rootUrl });
 
       await expect(response).rejects.toThrowError(ApiError);
-      await expect(response).rejects.toThrowError(String);
-      await expect(response).rejects.toThrowError(Boolean);
+      await expect(response).rejects.toMatchObject({
+        status: 404,
+        statusText: 'Not Found',
+      });
     });
   });
 });
