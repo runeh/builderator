@@ -1,6 +1,12 @@
 import nock from 'nock';
-import { createApiCall, ApiError } from '../src';
+import { createApiCall, ApiError, Config } from '../src';
 import * as rt from 'runtypes';
+
+type OnBeforeArgs = Parameters<NonNullable<Config['onBefore']>>;
+type OnAfterArgs = Parameters<NonNullable<Config['onAfter']>>;
+
+type OnBeforeReturn = ReturnType<NonNullable<Config['onBefore']>>;
+type OnAfterReturn = ReturnType<NonNullable<Config['onAfter']>>;
 
 const rootUrl = 'http://example.org';
 
@@ -572,13 +578,20 @@ describe('fetch call builder', () => {
         .method('GET')
         .build();
 
-      const onBefore = jest.fn();
-      const onAfter = jest.fn();
+      const onBefore = jest.fn<OnBeforeReturn, OnBeforeArgs>();
+      const onAfter = jest.fn<OnAfterReturn, OnAfterArgs>();
 
       await call({ rootUrl, onBefore, onAfter });
 
       expect(onBefore).toHaveBeenCalled();
       expect(onAfter).toHaveBeenCalled();
+
+      const onBeforeArg = onBefore.mock.calls[0][0];
+      const onAfterArg = onAfter.mock.calls[0][0];
+
+      expect(typeof onBeforeArg.startTimeMs).toEqual('number');
+
+      expect(onAfterArg.startTimeMs).toEqual(onAfterArg.startTimeMs);
     });
   });
 });

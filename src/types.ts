@@ -31,9 +31,17 @@ export interface CallRecord<A, R> {
     | { kind: 'json'; builder: JsonBodyBuilder<A> };
 }
 
+interface OnBeforeInfo {
+  startTimeMs: number;
+}
+
+interface OnAfterInfo {
+  startTimeMs: number;
+}
+
 export interface Config {
   rootUrl: string;
   userAgent?: string;
-  onBefore?: (info: { startTimeMs: number }) => void;
-  onAfter?: (info: { startTimeMs: number }) => void;
+  onBefore?: (info: OnBeforeInfo) => void;
+  onAfter?: (info: OnAfterInfo) => void;
 }
