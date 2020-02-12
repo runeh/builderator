@@ -72,12 +72,16 @@ function queryToSearchParams(query: Query | undefined): URLSearchParams {
 }
 
 // fixme: Also options
-function buildUrl<A, R, M>(def: RequestDefinition<A, R, M>, args: A): URL {
+function buildUrl<A, R, M, C>(
+  config: Config<C>,
+  def: RequestDefinition<A, R, M>,
+  args: A
+): URL {
   const { path, query } = def;
   const pathFun = typeof path === 'string' ? () => path : path;
   const queryFun = typeof query === 'function' ? query : () => query;
   // fixme
-  const url = new URL('http://example.org');
+  const url = new URL(config.rootUrl);
   url.pathname = pathToString(pathFun(args));
   for (const [key, value] of queryToSearchParams(queryFun(args))) {
     url.searchParams.set(key, value);
@@ -150,7 +154,7 @@ export function makeDef<A, R, M>(def: RequestDefinition<A, R, M>) {
       def.args.check(args);
     }
 
-    const url = buildUrl(def, args);
+    const url = buildUrl(config, def, args);
     const method = def.method;
     const headers = buildHeaders(def, args, config);
     const body = buildRequestBody(def, args);

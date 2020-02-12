@@ -15,6 +15,19 @@ describe('fetch call builder', () => {
     nock.enableNetConnect();
   });
 
+  it('respects the url from rootUrl', async () => {
+    nock('http://lol.com')
+      .get('/boop')
+      .reply(200, {});
+
+    const call = makeDef({
+      method: 'GET',
+      path: '/boop',
+    });
+
+    await call({ rootUrl: 'http://lol.com/boop' });
+  });
+
   describe('path building', () => {
     it('can take value', async () => {
       nock(rootUrl)
