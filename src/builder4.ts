@@ -35,8 +35,8 @@ interface BaseRequest<Arg, Ret> {
 
 interface PayloadRequest<Arg, Ret> extends BaseRequest<Arg, Ret> {
   method: PayloadMethod;
-  jsonBody: JsonBody | JsonBodyBuilder<Arg>;
-  formBody: FormBody | FormBodyBuilder<Arg>;
+  jsonBody?: JsonBody | JsonBodyBuilder<Arg>;
+  formBody?: FormBody | FormBodyBuilder<Arg>;
 }
 
 interface EmptyRequest<Arg, Ret> extends BaseRequest<Arg, Ret> {
