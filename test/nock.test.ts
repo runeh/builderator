@@ -2,12 +2,6 @@ import nock from 'nock';
 import { ApiError, makeDef, argType } from '../src';
 import * as rt from 'runtypes';
 
-// type OnBeforeArgs = Parameters<NonNullable<Config['onBefore']>>;
-// type OnAfterArgs = Parameters<NonNullable<Config['onAfter']>>;
-
-// type OnBeforeReturn = ReturnType<NonNullable<Config['onBefore']>>;
-// type OnAfterReturn = ReturnType<NonNullable<Config['onAfter']>>;
-
 const rootUrl = 'http://example.org';
 
 describe('fetch call builder', () => {
@@ -597,31 +591,34 @@ describe('fetch call builder', () => {
     });
   });
 
-  // describe('before/after handlers', () => {
-  //   it('should invoke handlers', async () => {
-  //     nock(rootUrl)
-  //       .get('/')
-  //       .reply(204);
+  describe('before/after handlers', () => {
+    it('should invoke handlers', async () => {
+      nock(rootUrl)
+        .get('/')
+        .reply(204);
 
-  //     const call = createApiCall()
-  //       .path('/')
-  //       .method('GET')
-  //       .build();
+      const call = makeDef({
+        path: '/',
+        method: 'GET',
+      });
 
-  //     const onBefore = jest.fn<OnBeforeReturn, OnBeforeArgs>();
-  //     const onAfter = jest.fn<OnAfterReturn, OnAfterArgs>();
+      const onBefore = jest.fn<any, { startTimeMs: number }[]>(() => ({
+        foo: 'test',
+      }));
+      const onAfter = jest.fn();
 
-  //     await call({ rootUrl, onBefore, onAfter });
+      await call({ rootUrl, onBefore, onAfter });
 
-  //     expect(onBefore).toHaveBeenCalled();
-  //     expect(onAfter).toHaveBeenCalled();
+      expect(onBefore).toHaveBeenCalled();
+      expect(onAfter).toHaveBeenCalled();
 
-  //     const onBeforeArg = onBefore.mock.calls[0][0];
-  //     const onAfterArg = onAfter.mock.calls[0][0];
+      const onBeforeArg = onBefore.mock.calls[0][0];
+      const onAfterArg = onAfter.mock.calls[0][0];
 
-  //     expect(typeof onBeforeArg.startTimeMs).toEqual('number');
+      expect(typeof onBeforeArg.startTimeMs).toEqual('number');
 
-  //     expect(onAfterArg.startTimeMs).toEqual(onAfterArg.startTimeMs);
-  //   });
-  // });
+      expect(onAfterArg.startTimeMs).toEqual(onAfterArg.startTimeMs);
+      expect(onAfterArg.beforeState.foo).toEqual('test');
+    });
+  });
 });

@@ -155,18 +155,22 @@ export function makeDef<A, R, X>(def: RequestDefinition<A, R, X>) {
     const method = def.method;
     const headers = buildHeaders(def, args, config);
     const body = buildRequestBody(def, args);
-    // let beforeRet: C | undefined = undefined;
 
-    // const startTimeMs = Date.now();
-    // if (config.onBefore !== undefined) {
-    // beforeRet = config.onBefore({ startTimeMs });
-    // }
+    const hasBeforeHandler = config.onBefore;
+    const startTimeMs = Date.now();
+
+    let returnFromBefore: C;
+
+    if (config.onBefore && hasBeforeHandler) {
+      returnFromBefore = config.onBefore({ startTimeMs });
+    }
 
     const res = await nodeFetch(url, { method, headers, body });
 
-    // if (config.onAfter) {
-    //   config.onAfter({ startTimeMs, beforeState: beforeRet });
-    // }
+    if (config.onBefore && config.onAfter && hasBeforeHandler) {
+      // fixme: can we avoid the bang
+      config.onAfter({ startTimeMs, beforeState: returnFromBefore! });
+    }
 
     if (res.status === 204) {
       if (def.runtype !== undefined) {
