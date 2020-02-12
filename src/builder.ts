@@ -24,28 +24,29 @@ export function argType<T>() {
 
 type ArgTypeSentinel<P> = (...args: any[]) => { payload: P };
 
-interface BaseRequest<Arg, Ret> {
+interface BaseRequest<Arg, Ret, MapRet> {
   path: string | PathBuilder<Arg>;
   headers?: Headers | HeadersBuilder<Arg>;
   query?: Query | QueryBuilder<Arg>;
   runtype?: rt.Runtype<Ret>;
   args?: rt.Runtype<Arg> | ArgTypeSentinel<Arg>;
-  map?: (response: Ret, arg: Arg) => any;
+  map?: (response: Ret, arg: Arg) => MapRet;
 }
 
-interface PayloadRequest<Arg, Ret> extends BaseRequest<Arg, Ret> {
+interface PayloadRequest<Arg, Ret, MapRet>
+  extends BaseRequest<Arg, Ret, MapRet> {
   method: PayloadMethod;
   jsonBody?: JsonBody | JsonBodyBuilder<Arg>;
   formBody?: FormBody | FormBodyBuilder<Arg>;
 }
 
-interface EmptyRequest<Arg, Ret> extends BaseRequest<Arg, Ret> {
+interface EmptyRequest<Arg, Ret, MapRet> extends BaseRequest<Arg, Ret, MapRet> {
   method: EmptyMethod;
 }
 
-type RequestDefinition<Arg = any, Ret = any> =
-  | PayloadRequest<Arg, Ret>
-  | EmptyRequest<Arg, Ret>;
+type RequestDefinition<Arg, Ret, MapRet> =
+  | PayloadRequest<Arg, Ret, MapRet>
+  | EmptyRequest<Arg, Ret, MapRet>;
 
 function isRuntype(thing: any): thing is rt.Runtype {
   if (thing != null && typeof thing.check === 'function') {
@@ -70,7 +71,7 @@ function queryToSearchParams(query: Query | undefined): URLSearchParams {
 }
 
 // fixme: Also options
-function buildUrl<A, R>(def: RequestDefinition<A, R>, args: A): URL {
+function buildUrl<A, R, X>(def: RequestDefinition<A, R, X>, args: A): URL {
   const { path, query } = def;
   const pathFun = typeof path === 'string' ? () => path : path;
   const queryFun = typeof query === 'function' ? query : () => query;
@@ -83,8 +84,8 @@ function buildUrl<A, R>(def: RequestDefinition<A, R>, args: A): URL {
   return url;
 }
 
-function buildHeaders<A, R>(
-  def: RequestDefinition<A, R>,
+function buildHeaders<A, R, X>(
+  def: RequestDefinition<A, R, X>,
   args: A,
   config: Config<any>
 ): Record<string, string> {
@@ -108,7 +109,7 @@ function buildHeaders<A, R>(
   return allHeaders;
 }
 
-function buildRequestBody<A, R>(def: RequestDefinition<A, R>, args: A) {
+function buildRequestBody<A, R, X>(def: RequestDefinition<A, R, X>, args: A) {
   //fixme
   if (def.method === 'POST' || def.method === 'PUT' || def.method === 'PATCH') {
     if (def.jsonBody !== undefined) {
@@ -134,13 +135,16 @@ function buildRequestBody<A, R>(def: RequestDefinition<A, R>, args: A) {
   }
 }
 
-export function makeDef<A extends undefined, R>(
-  arg: RequestDefinition<A, R>
+// export function makeDef<A, R, X extends number>(
+//   arg: RequestDefinition<A, R, X>
+// ): 23;
+export function makeDef<A extends undefined, R, X>(
+  arg: RequestDefinition<A, R, X>
 ): <T>(config: Config<T>) => Promise<R>;
-export function makeDef<A, R>(
-  arg: RequestDefinition<A, R>
+export function makeDef<A, R, X>(
+  arg: RequestDefinition<A, R, X>
 ): <T>(config: Config<T>, a: A) => Promise<R>;
-export function makeDef<A, R>(def: RequestDefinition<A, R>) {
+export function makeDef<A, R, X>(def: RequestDefinition<A, R, X>) {
   const ret = async <C>(config: Config<C>, args: A) => {
     if (isRuntype(def.args)) {
       def.args.check(args);

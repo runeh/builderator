@@ -412,13 +412,16 @@ describe('fetch call builder', () => {
   //     nock(rootUrl)
   //       .post('/')
   //       .reply(200, { name: 'Rune', age: 40 });
+
   //     const call = makeDef({
+  //       args: argType<string>(),
   //       runtype: rt.Record({ name: rt.String, age: rt.Number }),
   //       method: 'POST',
   //       path: '/',
   //       map: e => ({ info: `${e.name} (${e.age})` }),
   //     });
-  //     const res = await call({ rootUrl });
+
+  //     const res = await call({ rootUrl }, 'asdf');
   //     expect(res.info).toEqual('Rune (40)');
   //   });
   // });
