@@ -17,6 +17,7 @@ import {
 import nodeFetch from 'node-fetch';
 import { ApiError } from './exceptions';
 import { URLSearchParams } from 'url';
+// import { Runtype } from 'runtypes';
 
 export function argType<T>() {
   return (t: T) => ({ payload: t });
@@ -135,15 +136,15 @@ function buildRequestBody<A, R, X>(def: RequestDefinition<A, R, X>, args: A) {
   }
 }
 
-// export function makeDef<A, R, X extends number>(
-//   arg: RequestDefinition<A, R, X>
-// ): 23;
+// fixme: too naive
+type ApiReturn<R, M> = M extends string | number | {}  ? M : R;
+
 export function makeDef<A extends undefined, R, X>(
   arg: RequestDefinition<A, R, X>
-): <T>(config: Config<T>) => Promise<R>;
+): <T>(config: Config<T>) => Promise<ApiReturn<R, X>>;
 export function makeDef<A, R, X>(
   arg: RequestDefinition<A, R, X>
-): <T>(config: Config<T>, a: A) => Promise<R>;
+): <T>(config: Config<T>, a: A) => Promise<ApiReturn<R, X>>;
 export function makeDef<A, R, X>(def: RequestDefinition<A, R, X>) {
   const ret = async <C>(config: Config<C>, args: A) => {
     if (isRuntype(def.args)) {

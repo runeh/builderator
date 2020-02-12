@@ -407,25 +407,6 @@ describe('fetch call builder', () => {
     it.todo('can take args');
   });
 
-  // describe('response map', () => {
-  //   it.skip('can map', async () => {
-  //     nock(rootUrl)
-  //       .post('/')
-  //       .reply(200, { name: 'Rune', age: 40 });
-
-  //     const call = makeDef({
-  //       args: argType<string>(),
-  //       runtype: rt.Record({ name: rt.String, age: rt.Number }),
-  //       method: 'POST',
-  //       path: '/',
-  //       map: e => ({ info: `${e.name} (${e.age})` }),
-  //     });
-
-  //     const res = await call({ rootUrl }, 'asdf');
-  //     expect(res.info).toEqual('Rune (40)');
-  //   });
-  // });
-
   describe('response runtype', () => {
     it('validates type', async () => {
       const body = { name: 'Rune', age: 40 };
@@ -576,6 +557,43 @@ describe('fetch call builder', () => {
       });
 
       await call({ rootUrl }, { age: 12, name: 'blargh' });
+    });
+
+    // await call({ rootUrl }, { age: 12, name: 'blargh' });
+  });
+
+  it('should accept mapper with using runtype', async () => {
+    nock(rootUrl)
+      .get('/')
+      .reply(200, { name: 'test' });
+
+    const call = makeDef({
+      method: 'GET',
+      path: '/',
+      runtype: rt.Record({ name: rt.String }),
+      map: e => e.name,
+    });
+
+    const response = await call({ rootUrl });
+    expect(response).toEqual('test');
+  });
+
+  describe('response map', () => {
+    it('can map', async () => {
+      nock(rootUrl)
+        .post('/')
+        .reply(200, { name: 'Rune', age: 40 });
+
+      const call = makeDef({
+        args: argType<string>(),
+        runtype: rt.Record({ name: rt.String, age: rt.Number }),
+        method: 'POST',
+        path: '/',
+        map: e => ({ info: `${e.name} (${e.age})` }),
+      });
+
+      const res = await call({ rootUrl }, 'asdf');
+      expect(res.info).toEqual('Rune (40)');
     });
   });
 
