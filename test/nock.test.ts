@@ -476,7 +476,7 @@ describe('fetch call builder', () => {
       });
     });
 
-    it.skip('should throw when error in mapper', async () => {
+    it('should throw when error in mapper', async () => {
       nock(rootUrl)
         .get('/')
         .reply(200, { name: 'foo' });
@@ -490,8 +490,10 @@ describe('fetch call builder', () => {
       });
 
       const response = call({ rootUrl });
-      // fixme: what should the error be?
-      await expect(response).rejects.toThrowError(ApiError);
+      await expect(response).rejects.toThrowError(Error);
+      await expect(response).rejects.toMatchObject({
+        message: 'Morradi',
+      });
     });
 
     it('should throw when runtype input cond fails', async () => {
