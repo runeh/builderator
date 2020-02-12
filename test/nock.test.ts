@@ -511,8 +511,6 @@ describe('fetch call builder', () => {
 
       const response = call({ rootUrl }, 'foo');
 
-      // fixme: should this be another error? Somehow show that it
-      // was the input that failed?
       await expect(response).rejects.toThrowError(rt.ValidationError);
     });
 
@@ -567,8 +565,6 @@ describe('fetch call builder', () => {
 
       await call({ rootUrl }, { age: 12, name: 'blargh' });
     });
-
-    // await call({ rootUrl }, { age: 12, name: 'blargh' });
   });
 
   it('should accept mapper with using runtype', async () => {

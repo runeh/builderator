@@ -50,11 +50,8 @@ type RequestDefinition<Arg, Ret, MapRet> =
   | EmptyRequest<Arg, Ret, MapRet>;
 
 function isRuntype(thing: any): thing is rt.Runtype {
-  if (thing != null && typeof thing.check === 'function') {
-    return true; // fixme
-  } else {
-    return false;
-  }
+  // fixme: good enough?
+  return thing != null && typeof thing.check === 'function';
 }
 
 function pathToString(path: string | readonly PathPart[]): string {
@@ -71,7 +68,6 @@ function queryToSearchParams(query: Query | undefined): URLSearchParams {
   }
 }
 
-// fixme: Also options
 function buildUrl<A, R, M, C>(
   config: Config<C>,
   def: RequestDefinition<A, R, M>,
