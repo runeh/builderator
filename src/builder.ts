@@ -137,7 +137,7 @@ function buildRequestBody<A, R, X>(def: RequestDefinition<A, R, X>, args: A) {
 }
 
 // fixme: too naive
-type ApiReturn<R, M> = M extends string | number | {}  ? M : R;
+type ApiReturn<R, M> = M extends string | number | {} ? M : R;
 
 export function makeDef<A extends undefined, R, X>(
   arg: RequestDefinition<A, R, X>
