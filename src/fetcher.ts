@@ -38,7 +38,7 @@ function buildUrl<A, R>(record: CallRecord<A, R>, args: A): URL {
 function buildHeaders<A, R>(
   record: CallRecord<A, R>,
   args: A,
-  config: Config
+  config: Config<any>
 ): Record<string, string> {
   const headers: Record<string, string> = record.headersBuilder
     ? record.headersBuilder(args)
@@ -77,7 +77,7 @@ type ApiCall<A, R> = A extends undefined
 export function makeFetchFunction<A, R>(
   record: CallRecord<A, R>
 ): ApiCall<A, R> {
-  const ret: any = async (config: Config, args: A) => {
+  const ret: any = async <C>(config: Config<C>, args: A) => {
     if (record.argRuntype !== undefined) {
       record.argRuntype.check(args);
     }
@@ -86,16 +86,17 @@ export function makeFetchFunction<A, R>(
     const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);
     const body = buildRequestBody(record, args);
+    let beforeRet: C | undefined = undefined;
 
     const startTimeMs = Date.now();
     if (config.onBefore !== undefined) {
-      config.onBefore({ startTimeMs });
+      beforeRet = config.onBefore({ startTimeMs });
     }
 
     const res = await fetch(url, { method, headers, body });
 
     if (config.onAfter) {
-      config.onAfter({ startTimeMs });
+      config.onAfter({ startTimeMs, beforeState: beforeRet });
     }
 
     if (res.status === 204) {

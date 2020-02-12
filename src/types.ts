@@ -1,6 +1,10 @@
 import * as rt from 'runtypes';
 
-export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'DELETE';
+export type HttpMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT';
+
+export type BodyMethod = Extract<HttpMethod, 'POST' | 'PUT' | 'PATCH'>;
+
+export type VoidMethod = Exclude<HttpMethod, BodyMethod>;
 
 export type PathPart = string | number | boolean;
 export type PathBuilder<A> = (args: A) => string | readonly PathPart[];
@@ -35,13 +39,14 @@ interface OnBeforeInfo {
   startTimeMs: number;
 }
 
-interface OnAfterInfo {
+interface OnAfterInfo<T> {
   startTimeMs: number;
+  beforeState: T;
 }
 
-export interface Config {
+export interface Config<T> {
   rootUrl: string;
   userAgent?: string;
-  onBefore?: (info: OnBeforeInfo) => void;
-  onAfter?: (info: OnAfterInfo) => void;
+  onBefore?: (info: OnBeforeInfo) => T;
+  onAfter?: (info: OnAfterInfo<T>) => void;
 }
