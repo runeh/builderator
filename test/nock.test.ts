@@ -1,6 +1,7 @@
 import nock from 'nock';
 import { ApiError, makeDef, argType } from '../src';
 import * as rt from 'runtypes';
+import { OnBeforeInfo } from 'types';
 
 const rootUrl = 'http://example.org';
 
@@ -613,7 +614,7 @@ describe('fetch call builder', () => {
         method: 'GET',
       });
 
-      const onBefore = jest.fn<any, { startTimeMs: number }[]>(() => ({
+      const onBefore = jest.fn<any, OnBeforeInfo[]>(() => ({
         foo: 'test',
       }));
       const onAfter = jest.fn();
@@ -627,6 +628,8 @@ describe('fetch call builder', () => {
       const onAfterArg = onAfter.mock.calls[0][0];
 
       expect(typeof onBeforeArg.startTimeMs).toEqual('number');
+      expect(onBeforeArg.url.href).toEqual('http://example.org/');
+      expect(onBeforeArg.method).toEqual('GET');
 
       expect(onAfterArg.startTimeMs).toEqual(onAfterArg.startTimeMs);
       expect(onAfterArg.beforeState.foo).toEqual('test');

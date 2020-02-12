@@ -161,14 +161,22 @@ export function makeDef<A, R, M>(def: RequestDefinition<A, R, M>) {
     let returnFromBefore: C;
 
     if (config.onBefore && hasBeforeHandler) {
-      returnFromBefore = config.onBefore({ startTimeMs });
+      returnFromBefore = config.onBefore({
+        startTimeMs,
+        method,
+        url,
+      });
     }
 
     const res = await nodeFetch(url, { method, headers, body });
 
     if (config.onBefore && config.onAfter && hasBeforeHandler) {
       // fixme: can we avoid the bang
-      config.onAfter({ startTimeMs, beforeState: returnFromBefore! });
+      config.onAfter({
+        startTimeMs,
+        res,
+        beforeState: returnFromBefore!,
+      });
     }
 
     if (res.status === 204) {

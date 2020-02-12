@@ -1,3 +1,5 @@
+import { Response } from '@types/node-fetch';
+
 export type HttpMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT';
 
 export type PayloadMethod = Extract<HttpMethod, 'POST' | 'PUT' | 'PATCH'>;
@@ -20,12 +22,15 @@ export type FormBodyBuilder<A> = (args: A) => FormBody;
 export type JsonBody = Record<string, unknown>;
 export type JsonBodyBuilder<A> = (args: A) => JsonBody;
 
-interface OnBeforeInfo {
+export interface OnBeforeInfo {
   startTimeMs: number;
+  url: URL;
+  method: HttpMethod;
 }
 
 interface OnAfterInfo<T> {
   startTimeMs: number;
+  res: Response;
   beforeState: T;
 }
 
