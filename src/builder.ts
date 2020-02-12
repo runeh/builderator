@@ -184,18 +184,3 @@ export function makeDef<A, R>(def: RequestDefinition<A, R>) {
   };
   return ret as any;
 }
-
-// const lal = makeDef({
-//   method: 'GET',
-//   path: '/foo',
-//   runtype: rt.Boolean,
-//   args: argType<{ name: string }>(),
-// });
-
-// lal({
-//   rootUrl: '',
-//   onBefore: () => ({
-//     age: 32,
-//   }),
-//   onAfter: a => a.beforeState,
-// });
