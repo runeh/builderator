@@ -72,7 +72,7 @@ function queryToSearchParams(query: Query | undefined): URLSearchParams {
 }
 
 // fixme: Also options
-function buildUrl<A, R, X>(def: RequestDefinition<A, R, X>, args: A): URL {
+function buildUrl<A, R, M>(def: RequestDefinition<A, R, M>, args: A): URL {
   const { path, query } = def;
   const pathFun = typeof path === 'string' ? () => path : path;
   const queryFun = typeof query === 'function' ? query : () => query;
@@ -85,8 +85,8 @@ function buildUrl<A, R, X>(def: RequestDefinition<A, R, X>, args: A): URL {
   return url;
 }
 
-function buildHeaders<A, R, X>(
-  def: RequestDefinition<A, R, X>,
+function buildHeaders<A, R, M>(
+  def: RequestDefinition<A, R, M>,
   args: A,
   config: Config<any>
 ): Record<string, string> {
@@ -110,7 +110,7 @@ function buildHeaders<A, R, X>(
   return allHeaders;
 }
 
-function buildRequestBody<A, R, X>(def: RequestDefinition<A, R, X>, args: A) {
+function buildRequestBody<A, R, M>(def: RequestDefinition<A, R, M>, args: A) {
   //fixme
   if (def.method === 'POST' || def.method === 'PUT' || def.method === 'PATCH') {
     if (def.jsonBody !== undefined) {
@@ -129,7 +129,6 @@ function buildRequestBody<A, R, X>(def: RequestDefinition<A, R, X>, args: A) {
         // @ts-ignore
         return new URLSearchParams(body);
       }
-      // return body instanceof URLSearchParams ? body : new URLSearchParams(body);
     }
   } else {
     return undefined;
@@ -139,13 +138,13 @@ function buildRequestBody<A, R, X>(def: RequestDefinition<A, R, X>, args: A) {
 // fixme: too naive
 type ApiReturn<R, M> = M extends string | number | {} ? M : R;
 
-export function makeDef<A extends undefined, R, X>(
-  arg: RequestDefinition<A, R, X>
-): <T>(config: Config<T>) => Promise<ApiReturn<R, X>>;
-export function makeDef<A, R, X>(
-  arg: RequestDefinition<A, R, X>
-): <T>(config: Config<T>, a: A) => Promise<ApiReturn<R, X>>;
-export function makeDef<A, R, X>(def: RequestDefinition<A, R, X>) {
+export function makeDef<A extends undefined, R, M>(
+  arg: RequestDefinition<A, R, M>
+): <T>(config: Config<T>) => Promise<ApiReturn<R, M>>;
+export function makeDef<A, R, M>(
+  arg: RequestDefinition<A, R, M>
+): <T>(config: Config<T>, a: A) => Promise<ApiReturn<R, M>>;
+export function makeDef<A, R, M>(def: RequestDefinition<A, R, M>) {
   const ret = async <C>(config: Config<C>, args: A) => {
     if (isRuntype(def.args)) {
       def.args.check(args);
