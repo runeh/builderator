@@ -7,7 +7,7 @@ import {
   CallRecord,
   JsonBodyBuilder,
   JsonBody,
-  Method,
+  HttpMethod,
   PathBuilder,
   Query,
   QueryBuilder,
@@ -50,7 +50,7 @@ class Builder<A = undefined, R = void, M extends string = ''> {
     return this as any;
   }
 
-  method(method: Method) {
+  method(method: HttpMethod) {
     this.record.httpMethod = method;
     return (this as unknown) as Constrained<A, R, M, 'method'>;
   }

@@ -71,8 +71,8 @@ function buildRequestBody<A, R>(record: CallRecord<A, R>, args: A) {
 // fixme: Two signatures. With one and two args
 
 type ApiCall<A, R> = A extends undefined
-  ? (config: Config) => Promise<R>
-  : (config: Config, args: A) => Promise<R>;
+  ? (config: Config<any>) => Promise<R>
+  : (config: Config<any>, args: A) => Promise<R>;
 
 export function makeFetchFunction<A, R>(
   record: CallRecord<A, R>
@@ -86,18 +86,18 @@ export function makeFetchFunction<A, R>(
     const method = record.httpMethod ?? 'GET';
     const headers = buildHeaders(record, args, config);
     const body = buildRequestBody(record, args);
-    let beforeRet: C | undefined = undefined;
+    // let beforeRet: C | undefined = undefined;
 
-    const startTimeMs = Date.now();
-    if (config.onBefore !== undefined) {
-      beforeRet = config.onBefore({ startTimeMs });
-    }
+    // const startTimeMs = Date.now();
+    // if (config.onBefore !== undefined) {
+    //   beforeRet = config.onBefore({ startTimeMs });
+    // }
 
     const res = await fetch(url, { method, headers, body });
 
-    if (config.onAfter) {
-      config.onAfter({ startTimeMs, beforeState: beforeRet });
-    }
+    // if (config.onAfter) {
+    //   config.onAfter({ startTimeMs, beforeState: beforeRet });
+    // }
 
     if (res.status === 204) {
       if (record.outputRuntype !== rt.Void) {

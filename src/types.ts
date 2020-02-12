@@ -2,9 +2,9 @@ import * as rt from 'runtypes';
 
 export type HttpMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT';
 
-export type BodyMethod = Extract<HttpMethod, 'POST' | 'PUT' | 'PATCH'>;
+export type PayloadMethod = Extract<HttpMethod, 'POST' | 'PUT' | 'PATCH'>;
 
-export type VoidMethod = Exclude<HttpMethod, BodyMethod>;
+export type EmptyMethod = Exclude<HttpMethod, PayloadMethod>;
 
 export type PathPart = string | number | boolean;
 export type PathBuilder<A> = (args: A) => string | readonly PathPart[];
