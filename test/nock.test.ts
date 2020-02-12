@@ -407,22 +407,21 @@ describe('fetch call builder', () => {
     it.todo('can take args');
   });
 
-  describe('response map', () => {
-    // fixme!
-    // it.skip('can map', async () => {
-    //   nock(rootUrl)
-    //     .post('/')
-    //     .reply(200, { name: 'Rune', age: 40 });
-    //   const call = makeDef({
-    //     runtype: rt.Record({ name: rt.String, age: rt.Number }),
-    //     method: 'POST',
-    //     path: '/',
-    //     map: e => ({ info: `${e.name} (${e.age})` }),
-    //   });
-    //   const res = await call({ rootUrl });
-    //   expect(res.info).toEqual('Rune (40)');
-    // });
-  });
+  // describe('response map', () => {
+  //   it.skip('can map', async () => {
+  //     nock(rootUrl)
+  //       .post('/')
+  //       .reply(200, { name: 'Rune', age: 40 });
+  //     const call = makeDef({
+  //       runtype: rt.Record({ name: rt.String, age: rt.Number }),
+  //       method: 'POST',
+  //       path: '/',
+  //       map: e => ({ info: `${e.name} (${e.age})` }),
+  //     });
+  //     const res = await call({ rootUrl });
+  //     expect(res.info).toEqual('Rune (40)');
+  //   });
+  // });
 
   describe('response runtype', () => {
     it('validates type', async () => {

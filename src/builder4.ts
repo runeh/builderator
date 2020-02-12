@@ -164,7 +164,7 @@ export function makeDef<A, R>(def: RequestDefinition<A, R>) {
     // }
 
     if (res.status === 204) {
-      if (def.runtype !== rt.Void) {
+      if (def.runtype !== undefined) {
         throw new ApiError(
           `Got HTTP status ${res.status} but call requires response body`,
           res
