@@ -1,5 +1,3 @@
-import * as rt from 'runtypes';
-
 export type HttpMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT';
 
 export type PayloadMethod = Extract<HttpMethod, 'POST' | 'PUT' | 'PATCH'>;
