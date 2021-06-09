@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "node-fetch": "^2.6.0",
-    "normalize-url": "^5.0.0",
+    "normalize-url": "^5.3.1",
     "runtypes": "^4.1.0"
   }
 }
